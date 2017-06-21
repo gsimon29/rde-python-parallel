@@ -46,7 +46,7 @@ def Grap(space,X1,X2,t,x0,xmax,ymin,ymax,i,rank) :
     X1,X2 (array(1,n)) : Solutions approchées trouvées à l'instant t, doivent être de même longueur que space
     t (float) : Temps
     x0,xmax (float) : Borne inférieur et supérieur de l'intervalle de définition de l'espace
-    ymin,ymax (float) : Valeur minimal et maximal de toute les solutions
+    ymin,ymax (float) : Valeur minimale et maximale de toute les solutions
     i (int) : Sera inclut dans le nom du fichier du graphe
     rank (int) : Rang du coeur qui fait tourner le programme
   """

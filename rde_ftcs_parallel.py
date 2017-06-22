@@ -138,7 +138,6 @@ start_time = time.time()
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
-  
 
 #Time definition
 t0 = 0

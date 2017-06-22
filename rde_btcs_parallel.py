@@ -61,7 +61,7 @@ def Grap(space,X1,X2,t,x0,xmax,ymin,ymax,i,rank) :
   plt.ylim(ymin,ymax + 0.1*abs(ymax))
   plt.xlim(x0,xmax)
   plt.legend(loc=1,prop={'size':7.5})
-  plt.savefig('rde' + str(rank) + "0"*(5-len(str(i))) + str(i) + '.png', transparent=False)
+  plt.savefig('rde' + str(rank) + "0"*(10-len(str(i))) + str(i) + '.png', transparent=False)
   plt.clf()
 
 def Film(matrix1,matrix2,pas_t,times,space,x0,xmax,rank,size) :
@@ -94,13 +94,13 @@ def Film(matrix1,matrix2,pas_t,times,space,x0,xmax,rank,size) :
   #Delete the images
   for j in range(rank*pas_t//(gap*size),(rank + 1)*pas_t//(gap*size)) :
     i=gap*j
-    os.remove('rde' + str(rank) + "0"*(5-len(str(i))) + str(i) + '.png') 
+    os.remove('rde' + str(rank) + "0"*(10-len(str(i))) + str(i) + '.png') 
   
   comm.allgather(1) #It enable to run the next step when the cores have finished the previous one
   
   if rank==0 :
     #Gather the mp4 files into one
-    cmd1 = 'convert movie-rde-btcs*.mp4 movies-rde-btcs.mp4'
+    cmd1 = 'convert movie-rde-btcs*.mp4 Movies-rde-btcs.mp4'
     os.system(cmd1)
   
     #Delete the temporary mp4 files
@@ -119,6 +119,7 @@ def CI(x,xmax) :
   Returns:
     array(1,n) : 
   """
+  
   return np.sin(np.pi*x/xmax)
   
 def Reac(u) :
@@ -131,6 +132,7 @@ def Reac(u) :
   Returns:
     array(1,n) : Values of the reaction
   """
+  
   return np.exp(-u)
 
 #Initial time taking
@@ -151,7 +153,7 @@ times = np.linspace(t0,tmax,pas_t + 1)
 #Space definition
 x0 = 0
 xmax = 2
-pas_x = 19
+pas_x = 23
 
 #For the good development of the program, we need (pas_x + 1) to be divisible by size,
 #it is neccesary to have good overlaps between the matrices
@@ -165,7 +167,7 @@ space = np.linspace(x0,xmax,pas_x + 1)
 k = 1
 r = k*delta_t/delta_x**2
 
-#Creation of the matrix that will contain the results
+#Creation of the matrices that will contain the results
 final_matrix1 = np.zeros((pas_t + 1,pas_x_s + 4))
 final_matrix2 = np.zeros((pas_t + 1,pas_x_s + 4))
 
@@ -200,8 +202,6 @@ A = scipy.sparse.diags(
     diagonals = [main, lower, upper],
     offsets = [0, -1, 1], shape = (pas_x_s + 4, pas_x_s + 4),
     format = 'csr')
-    
-#print(rank,A.todense(),"\n")
 
 #Compute the solution in parallel 
 for n in range(0, pas_t+1) :
@@ -249,7 +249,7 @@ for n in range(0, pas_t+1) :
   matrix1[:] = scipy.sparse.linalg.spsolve(A, b1)
   matrix2[:] = scipy.sparse.linalg.spsolve(A, b2)
   
-  #Storage of the obtained values into the final matrix
+  #Storage of the obtained values into the final matrices
   final_matrix1[n][:] = matrix1[:]
   final_matrix2[n][:] = matrix2[:]
   

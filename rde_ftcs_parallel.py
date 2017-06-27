@@ -151,12 +151,13 @@ x0 = 0
 xmax = 2
 pas_x = 21
 
-#For the good development of the program, we need (pas_x - 1) to be divisible by size,
-#it is neccesary to have good overlaps between the matrices
+#For the good development of the program, we need (pas_x - 1) to be divisible by the number of cores.
+#In fact, (pas_x - 1) correspond to (number of point - number of overlaps between two matrices)
+#This is neccesary to have good overlaps between the matrices
 if (pas_x - 1)%size != 0 :
   pas_x = pas_x + (size-(pas_x - 1)%size)
-delta_x = (xmax-x0)/(pas_x)
 pas_x_s = pas_x//(size)
+delta_x = (xmax-x0)/(pas_x)
 space = np.linspace(x0,xmax,pas_x + 1)
 
 #Parameters definition

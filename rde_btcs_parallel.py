@@ -6,9 +6,6 @@ The transition matrix from a time step to another is sparsed with the function s
 The output files are csv files and it is possible to visualize the solutions with a mp4 movie. 
 """
 
-# -*- coding: utf-8 -*-
-
-from __future__ import division
 from mpi4py import MPI
 import matplotlib.pyplot as plt
 import numpy as np
@@ -155,10 +152,11 @@ x0 = 0
 xmax = 2
 pas_x = 23
 
-#For the good development of the program, we need (pas_x + 1) to be divisible by size,
-#it is neccesary to have good overlaps between the matrices
-if (pas_x + 1)%size != 0 :
-  pas_x = pas_x + (size-(pas_x + 1)%size)
+#For the good development of the program, we need (pas_x - 3) to be divisible by the number of cores.
+#In fact, (pas_x - 3) correspond to (number of point - number of overlaps between two matrices)
+#This is neccesary to have good overlaps between the matrices
+if (pas_x - 3)%size != 0 :
+  pas_x = pas_x + (size-(pas_x - 3)%size)
 pas_x_s = pas_x//(size)
 delta_x = (xmax-x0)/(pas_x)
 space = np.linspace(x0,xmax,pas_x + 1)
@@ -202,36 +200,30 @@ A = scipy.sparse.diags(
     diagonals = [main, lower, upper],
     offsets = [0, -1, 1], shape = (pas_x_s + 4, pas_x_s + 4),
     format = 'csr')
+    
+#print(rank,A.todense(),"\n")
 
 #Compute the solution in parallel 
 for n in range(0, pas_t+1) :
   if 0 < rank :
   # Send matrix[2] and matrix[3] to rank-1
-    comm.send(matrix1[2], dest = rank-1, tag = 1)
-    comm.send(matrix1[3], dest = rank-1, tag = 2)
-    comm.send(matrix2[2], dest = rank-1, tag = 3)
-    comm.send(matrix2[3], dest = rank-1, tag = 4)
-
-  # Receive matrix[pas_x_s + 2] and matrix[pas_x_s + 3] from rank+1
-  if rank < size-1 :
-    matrix1[pas_x_s + 2] = comm.recv(source = rank + 1, tag = 1)
-    matrix1[pas_x_s + 3] = comm.recv(source = rank + 1, tag = 2)
-    matrix2[pas_x_s + 2] = comm.recv(source = rank + 1, tag = 3)
-    matrix2[pas_x_s + 3] = comm.recv(source = rank + 1, tag = 4)
+    comm.Send([matrix1[2:4],MPI.FLOAT], dest = rank - 1, tag = 1)
+    comm.Send([matrix2[2:4],MPI.FLOAT], dest = rank - 1, tag = 2)
 
   # Send matrix[pas_x_s] and matrix[pas_x_s+1] à rank+1
   if rank < size-1 :
-    comm.send(matrix1[pas_x_s], dest = rank + 1, tag = 5)
-    comm.send(matrix1[pas_x_s + 1], dest = rank + 1, tag = 6)
-    comm.send(matrix2[pas_x_s], dest = rank + 1, tag = 7)
-    comm.send(matrix2[pas_x_s + 1], dest = rank + 1, tag = 8)
+    comm.Send([matrix1[-4:-2],MPI.FLOAT], dest = rank + 1, tag = 3)
+    comm.Send([matrix2[-4:-2],MPI.FLOAT], dest = rank + 1, tag = 4)
+
+  # Receive matrix[pas_x_s + 2] and matrix[pas_x_s + 3] from rank+1
+  if rank < size-1 :
+    comm.Recv([matrix1[-2:],MPI.FLOAT],source = rank + 1, tag = 1)
+    comm.Recv([matrix2[-2:],MPI.FLOAT],source = rank + 1, tag = 2)
 
   # Receive matrix[0] and matrix[1] from rank-1
   if 0 < rank :
-    matrix1[0] = comm.recv(source = rank-1, tag = 5)
-    matrix1[1] = comm.recv(source = rank-1, tag = 6)
-    matrix2[0] = comm.recv(source = rank-1, tag = 7)
-    matrix2[1] = comm.recv(source = rank-1, tag = 8)
+    comm.Recv([matrix1[:2],MPI.FLOAT],source = rank - 1, tag = 3)
+    comm.Recv([matrix2[:2],MPI.FLOAT],source = rank - 1, tag = 4)
     
   #Update the values of the matrix B
   b1[:] = matrix1[:]
@@ -271,8 +263,8 @@ gathered_matrix1 = np.concatenate(gathered_list1,axis = 1)
 gathered_matrix2 = np.concatenate(gathered_list2,axis = 1)
 
 #Name of the path of the output files
-path_no_reac="Results/results-rde-btcs-no-reac.csv"
-path_reac="Results/results-rde-btcs-with-reac.csv"
+path_no_reac="results-rde-btcs-no-reac.csv"
+path_reac="results-rde-btcs-with-reac.csv"
 
 #Create DataFrames and convert them into csv files
 round_number=4

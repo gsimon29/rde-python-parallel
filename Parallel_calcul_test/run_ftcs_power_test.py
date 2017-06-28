@@ -13,7 +13,7 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
-i0 = 3
+i0 = 4
 imax = 6
 
 first_time=True
@@ -34,18 +34,20 @@ else:
 
 j=0
 for i in range(i0,imax+1) :
-  pas_t = 10**i
-  pas_x = 19
+  pas_t = 11**i
+  pas_x = 3**i
   if size==1:
     results[j] = control.main(t0,tmax,pas_t,x0,xmax,pas_x)
   else:
-    results[j] = parallel.main(t0,tmax,pas_t,x0,xmax,pas_x,comm,rank,size)
+    results[j] = parallel.main(t0,tmax,pas_t,x0,xmax,pas_x,rank,size)
   j=j+1
 with open("test.csv","a") as f :
   writer = csv.writer(f, delimiter=',')
   if first_time and size==1 :
-    column_name=np.array([10**i for i in range(i0,imax+1)])
-    writer.writerow(column_name)
+    column_name1=np.array([11**i for i in range(i0,imax+1)])
+    column_name2=np.array([3**i for i in range(i0,imax+1)])
+    writer.writerow(column_name1)
+    writer.writerow(column_name2)
   writer.writerow(results)
 
 

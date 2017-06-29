@@ -1,7 +1,6 @@
 """
 Numerical approximation with parallel computing of the reaction-diffusion equation.
 Dirichlet boundary conditions and the method FTCS (Forward-Time Central-Space) are used.
-The output files are csv files and it is possible to visualize the solutions with a mp4 movie. 
 """
 
 # -*- coding :  utf-8 -*-

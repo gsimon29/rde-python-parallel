@@ -14,7 +14,7 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 i0 = 4
-imax = 6
+imax = 5
 
 first_time=True
 
@@ -27,6 +27,7 @@ x0 = 0
 xmax = 2
 
 results=np.zeros(((imax+2-i0)))
+#If the parallel computing is used we put 1 (True) is the last row, otherwise we put 0 (False)
 if size==1:
   results[-1] = 0
 else:
@@ -39,9 +40,9 @@ for i in range(i0,imax+1) :
   if size==1:
     results[j] = control.main(t0,tmax,pas_t,x0,xmax,pas_x)
   else:
-    results[j] = parallel.main(t0,tmax,pas_t,x0,xmax,pas_x,rank,size)
+    results[j] = parallel.main(t0,tmax,pas_t,x0,xmax,pas_x,comm,rank,size)
   j=j+1
-with open("test.csv","a") as f :
+with open("power_test.csv","a") as f :
   writer = csv.writer(f, delimiter=',')
   if first_time and size==1 :
     column_name1=np.array([11**i for i in range(i0,imax+1)])

@@ -15,7 +15,7 @@ comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
-i0 = 6
+i0 = 3
 imax = 6
 
 first_time=True
@@ -42,10 +42,10 @@ for i in range(i0,imax+1) :
   pas_t = 10**i
   pas_x = 3**i
   if size==1:
-    #ftcs_results[j] = ftcs_control.main(t0,tmax,pas_t,x0,xmax,pas_x)
+    ftcs_results[j] = ftcs_control.main(t0,tmax,pas_t,x0,xmax,pas_x)
     btcs_results[j] = btcs_control.main(t0,tmax,pas_t,x0,xmax,pas_x)
   else:
-    #ftcs_results[j] = ftcs_parallel.main(t0,tmax,pas_t,x0,xmax,pas_x,comm,rank,size)
+    ftcs_results[j] = ftcs_parallel.main(t0,tmax,pas_t,x0,xmax,pas_x,comm,rank,size)
     btcs_results[j] = btcs_parallel.main(t0,tmax,pas_t,x0,xmax,pas_x,comm,rank,size)
   j=j+1
 with open("test.csv","a") as f :
@@ -59,7 +59,7 @@ with open("test.csv","a") as f :
     row_name2=np.array([3**i for i in range(i0,imax+1)])
     writer.writerow(row_name1)
     writer.writerow(row_name2)
-  #writer.writerow(ftcs_results)
+  writer.writerow(ftcs_results)
   writer.writerow(btcs_results)
 
 

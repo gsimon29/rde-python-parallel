@@ -25,7 +25,11 @@ def main(t0,tmax,pas_t,x0,xmax,pas_x,comm,rank,size):
   #For the good development of the program, we need (pas_x - 1) to be divisible by size,
   #it is neccesary to have good overlaps between the matrices
   if (pas_x - 1)%size != 0 :
-    pas_x = pas_x + (size-(pas_x - 1)%size)
+    pas_x = pas_x + (size-(pas_x - 3)%size)
+  if size >= 2 :
+    pas_x_s = pas_x//(size)
+  else : 
+    pas_x_s = pas_x//(size) - 1//size
   delta_x = (xmax-x0)/(pas_x)
   pas_x_s = pas_x//(size)
   space = np.linspace(x0,xmax,pas_x + 1)

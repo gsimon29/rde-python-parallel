@@ -1,6 +1,6 @@
 import os
 #Define the number of cores
-n=4
+n=2
 
 #Run the following lines into the terminal
 os.system("python3 run_power_test.py")

@@ -50,7 +50,10 @@ def main(t0,tmax,pas_t,x0,xmax,pas_x,comm,rank,size):
 #This is neccesary to have good overlaps between the matrices
   if (pas_x - 3)%size != 0 :
     pas_x = pas_x + (size-(pas_x - 3)%size)
-  pas_x_s = pas_x//(size)-1
+  if size >= 4 :
+    pas_x_s = pas_x//(size)
+  else : 
+    pas_x_s = pas_x//(size) - 3//size
   delta_x = (xmax-x0)/(pas_x)
   space = np.linspace(x0,xmax,pas_x + 1)
 

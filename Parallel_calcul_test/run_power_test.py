@@ -16,7 +16,7 @@ rank = comm.Get_rank()
 size = comm.Get_size()
 
 i0 = 3
-imax = 6
+imax = 4
 
 first_time=True
 
@@ -51,7 +51,7 @@ for i in range(i0,imax+1) :
 with open("test.csv","a") as f :
   writer = csv.writer(f, delimiter=',')
   if first_time and size==1 :
-    name1=["0=Exp_norm","1=Exp_parra","2=Imp_norm","3=Imp_parra"]
+    name1=["0=Exp_norm","1=Exp_para","2=Imp_norm","3=Imp_para"]
     name2=["First_row=nb_points_t","Second_row=nb_points_x"]
     writer.writerow(name1)
     writer.writerow(name2)

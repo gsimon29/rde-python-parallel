@@ -23,10 +23,12 @@ size = comm.Get_size()
 
 #Parameters used to define the number of step for time and space
 i0 = 4
-imax = 6
+imax = 5
 
 #If True, it will print later information into the csv file
 first_time=True
+
+print("This is a test")
 
 #Time definition
 t0 = 0

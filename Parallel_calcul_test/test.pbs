@@ -1,0 +1,37 @@
+# Shell de soumission Class small_para 
+#!/bin/bash 
+# Nom de la queue de soumission parallele [small_para,big_para,full,gpu] 
+#PBS -q small_para
+# Nombre de processeurs et quantite de memoire vive 
+#PBS -l select=1:ncpus=4:mem=10Gb
+#PBS -l walltime=01:00:00
+# Nom du job
+#PBS -N job-test
+# Fusionne stdout et stderr dans fichier unique 
+#PBS -j oe
+# Email fin du job 
+#PBS -m e -M gael.simon29@gmail.com
+export OUTDIR=$PBS_O_WORKDIR/Output
+mkdir -p $OUTDIR
+# Pour avoir l environnement necessaire a son job 
+# Initialiser module 
+. /usr/share/modules/init/sh
+# Charger les modules, par exemple MKL 
+module load python/3.4.2
+# Charger les modules, par exemple mpi sgi 
+module load openmpi/1.8.3
+# L execution a lieu dans un repertoire temporaire 
+# il faut recopier le programme et les donnees 
+cp $PBS_O_WORKDIR/*.py .
+#cp $PBS_O_WORKDIR/vos_donnees . 
+# Lancement du job 
+python3 run_power_test.py > fichier_sortie_control.log 2>&1
+mpirun -n ${NCPUS} python3 run_power_test.py > fichier_sortie_parallel.log 2>&1
+# Le repertoire temporaire est efface a la fin du job 
+# il faut donc rapatrier les resultats 
+cp fichier_sortie_control.log $OUTDIR
+cp fichier_sortie_parallel.log $OUTDIR
+cp *.csv $OUTDIR
+# Creer le rapport sur le job 
+qstat -f $PBS_JOBID
+exit 0

@@ -1,4 +1,9 @@
+"""
+Script that run the terminal command for a given number of cores
+"""
+
 import os
+
 #Define the number of cores
 n=2
 

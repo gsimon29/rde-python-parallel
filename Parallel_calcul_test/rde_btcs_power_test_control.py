@@ -1,6 +1,7 @@
 """
 Numerical approximation of the reaction-diffusion equation.
 Dirichlet boundary conditions and the method BTCS (Backward-Time Central-Space) are used. 
+This script is simplified to test the speed of parallel computing
 """
 
 import numpy as np

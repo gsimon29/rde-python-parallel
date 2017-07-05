@@ -1,6 +1,7 @@
 """
 Numerical approximation with parallel computing of the reaction-diffusion equation.
 Dirichlet boundary conditions and the method FTCS (Forward-Time Central-Space) are used.
+This script is simplified to test the speed of parallel computing
 """
 
 # -*- coding :  utf-8 -*-

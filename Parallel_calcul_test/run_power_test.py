@@ -1,3 +1,8 @@
+"""
+Run the scripts that approximate RDE in order to compare the speed with or without parallel computing
+The results are saved into a csv file
+"""
+
 # -*- coding :  utf-8 -*-
 
 from __future__ import division
@@ -11,13 +16,16 @@ import rde_ftcs_power_test_parallel as ftcs_parallel
 import rde_btcs_power_test_control as btcs_control
 import rde_btcs_power_test_parallel as btcs_parallel
 
+#Initiation of the parallel computing
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size()
 
-i0 = 3
-imax = 4
+#Parameters used to define the number of step for time and space
+i0 = 4
+imax = 6
 
+#If True, it will print later information into the csv file
 first_time=True
 
 #Time definition
@@ -28,6 +36,7 @@ tmax = 1
 x0 = 0
 xmax = 2
 
+#Define matrices used to store the results
 ftcs_results=np.zeros(((imax+2-i0)))
 btcs_results=np.zeros(((imax+2-i0)))
 if size==1:
@@ -37,6 +46,7 @@ else:
   ftcs_results[-1] = 1
   btcs_results[-1] = 3
 
+#Compute the time taken by the programs for different time and space steps
 j=0
 for i in range(i0,imax+1) :
   pas_t = 10**i
@@ -48,6 +58,8 @@ for i in range(i0,imax+1) :
     ftcs_results[j] = ftcs_parallel.main(t0,tmax,pas_t,x0,xmax,pas_x,comm,rank,size)
     btcs_results[j] = btcs_parallel.main(t0,tmax,pas_t,x0,xmax,pas_x,comm,rank,size)
   j=j+1
+  
+#Create the csv file with the necessary information
 with open("test.csv","a") as f :
   writer = csv.writer(f, delimiter=',')
   if first_time and size==1 :
